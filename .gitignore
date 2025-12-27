@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# Poetry
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+dist/
+*.egg-info/
+
+# Models (Whisper and Piper models can be large)
+models/
+*.bin
+
+# Audio files
+*.wav
+*.mp3
+test_audio/
+r2d2_*.wav
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
