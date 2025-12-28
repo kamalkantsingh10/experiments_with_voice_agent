@@ -1,22 +1,27 @@
-# Voice Agent for Raspberry Pi 5
+# OLAF - Voice Agent for Raspberry Pi 5
 
-A local voice agent running on Raspberry Pi 5 with local speech processing and cloud LLM integration.
+A Star Wars-inspired local voice agent running on Raspberry Pi 5 with hybrid voice output combining R2D2 sounds and intelligible speech.
 
 ## Overview
 
-This project implements a voice-activated AI agent that:
+OLAF (Optimized Local Assistant Framework) is a voice-activated AI agent that:
 - 🎤 Listens and transcribes speech locally using Faster-Whisper
 - 🧠 Processes requests using Claude API (cloud)
-- 🤖 Responds with R2D2-style phonetic speech (text-to-beeps with rhythm hints)
-- 🎵 Pure procedural audio synthesis - no models required
-- ⚡ Runs entirely on Raspberry Pi 5 with ~1-2 second latency
+- 🤖 **Hybrid Voice Output:**
+  - R2D2-style emotional acknowledgments (instant feedback <50ms)
+  - Piper TTS for clear British speech (male/female voices)
+  - Star Wars communication effects (comlink, hologram, radio)
+- 🎵 Combines procedural R2D2 synthesis + neural TTS
+- ⚡ Runs entirely on Raspberry Pi 5 with optimized latency
 
 ## Features
 
+- **Hybrid Voice System**: R2D2 acknowledgments + clear TTS responses
+- **Star Wars Effects**: Comlink, hologram, and radio transmission effects
 - **Privacy-focused**: All speech processing happens locally on your Pi
-- **Low latency**: Optimized for real-time conversation
+- **Low latency**: R2D2 sounds are instant, TTS optimized for Pi
 - **Modular**: Easy to swap components (STT, TTS, LLM)
-- **Hailo-ready**: Prepared for NPU acceleration (future optimization)
+- **British Voices**: Male and female voice options via Piper TTS
 
 ## Hardware Requirements
 
@@ -44,12 +49,65 @@ cp .env.example .env
 # Edit .env and add your Anthropic API key
 ```
 
-4. **Run the voice agent:**
+4. **Run the hybrid voice demo:**
 ```bash
-poetry run python voice_agent.py
+poetry run python demo_hybrid_voice.py
 ```
 
-## R2D2 Phonetic Text-to-Speech
+## Hybrid Voice System
+
+OLAF uses a unique **two-tier voice system** combining the best of both worlds:
+
+### 1. R2D2 Acknowledgments (Instant Feedback)
+- Emotional beeps and sounds that play instantly (<50ms)
+- Provides immediate feedback while generating full response
+- 10 distinct emotions: happy, sad, angry, excited, curious, neutral, confused, lazy, afraid, naughty
+
+### 2. Piper TTS (Intelligible Speech)
+- High-quality British voices (male/female)
+- Optimized for Raspberry Pi 5
+- ~500ms-1s generation time
+
+### 3. Star Wars Communication Effects
+- **Comlink**: Military-style radio with squelch tones (clearest)
+- **Hologram**: Glitchy transmission like Leia's message
+- **Radio**: Standard radio transmission with static
+
+### Example Usage
+
+```python
+from demo_hybrid_voice import HybridVoiceAgent
+
+# Initialize OLAF
+agent = HybridVoiceAgent(tts_voice='female')
+
+# Full response: R2D2 beep + Piper speech with comlink effect
+agent.respond(
+    "Atmospheric conditions stable, 22 degrees celsius.",
+    effect='comlink',
+    acknowledge_emotion='curious'
+)
+
+# Quick R2D2-only response
+agent.quick_response("you're welcome", emotion='happy')
+```
+
+### Demo Scenarios
+
+Run `demo_hybrid_voice.py` to see 20 Star Wars-style responses for:
+- Weather & environment monitoring
+- Time management & scheduling
+- Smart home control
+- Information retrieval
+- Reminders & task management
+- Navigation & traffic
+- Entertainment control
+- Security & alerts
+- Shopping & lists
+
+Each response sounds like a communication from a Star Wars droid!
+
+## R2D2 Voice System (Word Vocabulary)
 
 The R2D2 voice synthesizer now supports phonetic text-to-speech, converting text into R2D2 sounds with subtle rhythmic hints:
 
@@ -163,8 +221,12 @@ See [TUTORIAL.md](TUTORIAL.md) for detailed step-by-step instructions.
 
 - **Orchestration**: [Pipecat](https://github.com/pipecat-ai/pipecat)
 - **Speech-to-Text**: [Faster-Whisper](https://github.com/guillaumekln/faster-whisper)
-- **Voice Output**: Custom R2D2-style procedural synthesis
+- **Voice Output**:
+  - [Piper TTS](https://github.com/rhasspy/piper) - Neural TTS optimized for Pi
+  - Custom R2D2-style procedural synthesis
+  - DSP effects (radio, comlink, hologram)
 - **LLM**: [Claude API](https://www.anthropic.com/api)
+- **Audio Processing**: NumPy, SciPy, sounddevice
 
 ## Project Status
 

@@ -324,6 +324,189 @@ speaker-test -t wav -c 2
 
 ---
 
+## Section 3.5: Setup Piper TTS & Hybrid Voice System
+
+Now we'll add **Piper TTS** for intelligible speech and combine it with R2D2 sounds to create the ultimate hybrid voice agent!
+
+**Why Hybrid Voice:**
+- ✅ **R2D2**: Instant emotional feedback (<50ms)
+- ✅ **Piper TTS**: Clear, understandable responses
+- ✅ **Best UX**: User hears acknowledgment immediately, then gets full answer
+- ✅ **Star Wars Effects**: Comlink, hologram, radio transmission DSP
+
+### Install Piper TTS
+
+Piper is already in your dependencies. The models auto-download on first use:
+
+```bash
+poetry install  # Already done!
+```
+
+### Download Voice Models
+
+Voice models download automatically when you first use them. We're using British voices:
+- **Female**: `en_GB-alba-medium` (~150MB)
+- **Male**: `en_GB-alan-medium` (~150MB)
+
+### Test Piper TTS
+
+Run the working test:
+
+```bash
+poetry run python test_piper_working.py
+```
+
+You should hear: "Hello, I am a British female voice assistant."
+
+### Understanding the Hybrid System
+
+The `HybridVoiceAgent` combines three components:
+
+1. **R2D2 acknowledgment** - Instant emotional beep
+2. **Piper TTS** - Clear speech generation
+3. **Radio effects** - Star Wars-style DSP processing
+
+**Flow:**
+```
+User speaks
+    ↓
+[Instant R2D2 beep] ← User hears this immediately!
+    ↓
+[Generate Piper TTS] ← Takes 500ms-1s
+    ↓
+[Apply comlink effect] ← Add radio character
+    ↓
+[Play response] ← User hears full answer
+```
+
+### Radio Effects Available
+
+**Comlink** (Recommended - Clearest):
+- Military radio with squelch tones
+- Band-pass filter (250Hz-4000Hz)
+- Minimal static for clarity
+- Perfect for daily assistant use
+
+**Hologram**:
+- Glitchy transmission (like Leia's message)
+- Random dropouts (4%)
+- Tinny, futuristic sound
+- Great for special messages
+
+**Radio**:
+- Classic radio transmission
+- More static and distortion
+- Vintage communication feel
+
+### Test the Hybrid System
+
+Run the complete demo with 20 Star Wars scenarios:
+
+```bash
+poetry run python demo_hybrid_voice.py
+```
+
+**What happens:**
+1. OLAF responds to 20 daily tasks
+2. Each starts with R2D2 acknowledgment
+3. Then speaks clear response via comlink
+4. Uses Star Wars terminology!
+
+**Example outputs:**
+- "Atmospheric conditions stable, 22 degrees celsius, no hostile weather detected"
+- "Security protocols engaged, all entry points sealed"
+- "Accessing your cantina music collection, preparing playback systems"
+
+### Code Structure
+
+**Key Files:**
+- `piper_tts.py` - Piper TTS wrapper with British voices
+- `radio_effects.py` - DSP effects (comlink, hologram, radio)
+- `demo_hybrid_voice.py` - Complete hybrid voice agent
+- `r2d2_word_vocabulary.py` - R2D2 sound generator
+
+### Customization
+
+**Change voice:**
+```python
+# Female voice (default)
+agent = HybridVoiceAgent(tts_voice='female')
+
+# Male voice
+agent = HybridVoiceAgent(tts_voice='male')
+```
+
+**Change effect:**
+```python
+# Comlink (clearest)
+agent.respond("Message", effect='comlink')
+
+# Hologram (glitchy)
+agent.respond("Message", effect='hologram')
+
+# Clear (no effect)
+agent.respond("Message", effect='clear')
+```
+
+**Change R2D2 emotion:**
+```python
+agent.respond("Message", acknowledge_emotion='excited')  # High-pitched beep
+agent.respond("Message", acknowledge_emotion='curious')  # Questioning beep
+agent.respond("Message", acknowledge_emotion='happy')    # Cheerful beep
+```
+
+### Performance
+
+| Component | Latency | Size |
+|-----------|---------|------|
+| R2D2 acknowledgment | <50ms | <5MB |
+| Piper voice model | - | ~150MB |
+| TTS generation | 500ms-1s | - |
+| Radio effect | <50ms | Negligible |
+| **Total perceived latency** | <100ms | User hears beep instantly! |
+
+### Integration Preview
+
+In the full voice pipeline, this will work as:
+
+```python
+# User: "What's the weather?"
+
+# 1. Whisper transcribes locally
+# 2. Send to Claude API
+# 3. Claude responds: "It's 72 degrees and sunny"
+# 4. OLAF speaks:
+agent.respond(
+    "Atmospheric conditions stable, 72 degrees celsius.",
+    effect='comlink',
+    acknowledge_emotion='curious'
+)
+```
+
+Perfect user experience - instant feedback + clear information!
+
+### Troubleshooting
+
+**Issue: Voice model download fails**
+- Check internet connection
+- Models are ~150MB each
+- Downloaded to `./piper_models/` directory
+
+**Issue: Static too loud**
+- Edit `radio_effects.py`
+- Reduce `static_level` parameter
+- Comlink already optimized for clarity
+
+**Issue: Voice not clear enough**
+- Use `effect='clear'` (no DSP)
+- Or adjust band-pass filter in `radio_effects.py`
+
+**Issue: R2D2 too loud/quiet**
+- Adjust in `r2d2_word_vocabulary.py`
+- Or change volume in agent code
+
+---
+
 ## Section 4: Setup VAD & Wake Word Detection
 
 Before connecting to the cloud LLM, we need two critical components for proper voice interaction:

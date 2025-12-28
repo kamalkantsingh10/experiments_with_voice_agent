@@ -11,7 +11,9 @@ dist/
 
 # Models (Whisper and Piper models can be large)
 models/
+piper_models/
 *.bin
+*.onnx
 
 # Audio files
 *.wav
