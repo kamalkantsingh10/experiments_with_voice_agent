@@ -1,28 +1,61 @@
-# Environment variables
-.env
-
-# Poetry
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-.venv/
+*.so
+.Python
+build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
+.installed.cfg
+*.egg
 
-# Models (Whisper and Piper models can be large)
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# Environment Variables
+.env
+
+# Models and Downloaded Files
 models/
-piper_models/
-*.bin
-*.onnx
+r2d2_chatbot/speech/tts/piper_models/*.onnx
+r2d2_chatbot/speech/tts/piper_models/*.onnx.json
+r2d2_chatbot/audio/wake_models/*.ppn
 
-# Audio files
-*.wav
-*.mp3
-test_audio/
-r2d2_*.wav
-
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Audio files (optional - uncomment if you don't want to track audio)
+# *.wav
+# *.mp3
+# *.ogg

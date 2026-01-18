@@ -13,16 +13,17 @@ import os
 from pathlib import Path
 import urllib.request
 import json
-from radio_effects import radio_effect, comlink_effect, hologram_effect
+from r2d2_chatbot.speech.tts.effects import radio_effect, comlink_effect, hologram_effect, dramatic_narrator_effect, clear_transmission_effect
 
 
 class PiperTTS:
     """Simple TTS class using Piper with British voices"""
 
-    # British voice models
+    # Voice models
     VOICES = {
-        'male': 'en_GB-alan-medium',      # British male voice
-        'female': 'en_GB-alba-medium',    # British female voice
+        'male': 'en_GB-alan-medium',           # British male voice
+        'female': 'en_US-ljspeech-high',       # US female voice (HIGH quality, clearest)
+        'female_british': 'en_GB-alba-medium', # British female voice (backup)
     }
 
     # Hugging Face model URLs
@@ -33,19 +34,26 @@ class PiperTTS:
             'json': f"{HF_BASE_URL}/en/en_GB/alan/medium/en_GB-alan-medium.onnx.json",
         },
         'female': {
+            'onnx': f"{HF_BASE_URL}/en/en_US/ljspeech/high/en_US-ljspeech-high.onnx",
+            'json': f"{HF_BASE_URL}/en/en_US/ljspeech/high/en_US-ljspeech-high.onnx.json",
+        },
+        'female_british': {
             'onnx': f"{HF_BASE_URL}/en/en_GB/alba/medium/en_GB-alba-medium.onnx",
             'json': f"{HF_BASE_URL}/en/en_GB/alba/medium/en_GB-alba-medium.onnx.json",
         },
     }
 
-    def __init__(self, default_voice='female', models_dir='./piper_models'):
+    def __init__(self, default_voice='female', models_dir=None):
         """
         Initialize Piper TTS
 
         Args:
             default_voice: 'male' or 'female' (default: 'female')
-            models_dir: Directory to store voice models (default: './piper_models')
+            models_dir: Directory to store voice models (default: tts/piper_models)
         """
+        if models_dir is None:
+            # Default to piper_models in the same directory as this file
+            models_dir = Path(__file__).parent / 'piper_models'
         self.default_voice = default_voice
         self.voices_loaded = {}
         self.sample_rate = 22050  # Piper default sample rate
@@ -149,7 +157,7 @@ class PiperTTS:
 
         Args:
             audio: Audio array (float32, -1.0 to 1.0)
-            effect: Effect type - 'clear', 'radio', 'comlink', or 'hologram'
+            effect: Effect type - 'clear', 'radio', 'comlink', 'hologram', 'dramatic', or 'clear_transmission'
 
         Returns:
             Processed audio
@@ -162,8 +170,12 @@ class PiperTTS:
             return comlink_effect(audio, self.sample_rate)
         elif effect == 'hologram':
             return hologram_effect(audio, self.sample_rate)
+        elif effect == 'dramatic':
+            return dramatic_narrator_effect(audio, self.sample_rate)
+        elif effect == 'clear_transmission':
+            return clear_transmission_effect(audio, self.sample_rate)
         else:
-            raise ValueError(f"Unknown effect: {effect}. Use 'clear', 'radio', 'comlink', or 'hologram'")
+            raise ValueError(f"Unknown effect: {effect}. Use 'clear', 'radio', 'comlink', 'hologram', 'dramatic', or 'clear_transmission'")
 
     def speak(self, text, voice=None, effect='clear'):
         """
@@ -172,7 +184,7 @@ class PiperTTS:
         Args:
             text: Text to speak
             voice: 'male' or 'female' (uses default if not specified)
-            effect: Audio effect - 'clear', 'radio', 'comlink', or 'hologram'
+            effect: Audio effect - 'clear', 'radio', 'comlink', 'hologram', 'dramatic', or 'clear_transmission'
         """
         print(f"Speaking: \"{text}\" (voice: {voice or self.default_voice}, effect: {effect})")
         audio = self.generate(text, voice)

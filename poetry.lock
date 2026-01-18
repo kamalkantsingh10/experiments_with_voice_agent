@@ -1056,6 +1056,28 @@ files = [
 ]
 
 [[package]]
+name = "groq"
+version = "1.0.0"
+description = "The official Python library for the groq API"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "groq-1.0.0-py3-none-any.whl", hash = "sha256:6e22bf92ffad988f01d2d4df7729add66b8fd5dbfb2154b5bbf3af245b72c731"},
+    {file = "groq-1.0.0.tar.gz", hash = "sha256:66cb7bb729e6eb644daac7ce8efe945e99e4eb33657f733ee6f13059ef0c25a9"},
+]
+
+[package.dependencies]
+anyio = ">=3.5.0,<5"
+distro = ">=1.7.0,<2"
+httpx = ">=0.23.0,<1"
+pydantic = ">=1.9.0,<3"
+sniffio = "*"
+typing-extensions = ">=4.10,<5"
+
+[package.extras]
+aiohttp = ["aiohttp", "httpx-aiohttp (>=0.1.9)"]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -2213,6 +2235,17 @@ files = [
 ]
 
 [[package]]
+name = "pvporcupine"
+version = "4.0.1"
+description = "Porcupine wake word engine."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pvporcupine-4.0.1-py3-none-any.whl", hash = "sha256:34cac4d015b0d47d71c74e6c60a1855d41e1bc773488ef91bceb2efac2b9da65"},
+    {file = "pvporcupine-4.0.1.tar.gz", hash = "sha256:987d6aa9590c09e2fc3cd8513eb85c96402d2d6731d5691e8e3bcd44196fd852"},
+]
+
+[[package]]
 name = "pyaudio"
 version = "0.2.14"
 description = "Cross-platform audio I/O with PortAudio"
@@ -3193,6 +3226,19 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["backports-zstd (>=1.0.0)"]
 
 [[package]]
+name = "webrtcvad"
+version = "2.0.10"
+description = "Python interface to the Google WebRTC Voice Activity Detector (VAD)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "webrtcvad-2.0.10.tar.gz", hash = "sha256:f1bed2fb25b63fb7b1a55d64090c993c9c9167b28485ae0bcdd81cf6ede96aea"},
+]
+
+[package.extras]
+dev = ["check-manifest", "memory_profiler", "nose", "psutil", "unittest2", "zest.releaser"]
+
+[[package]]
 name = "win32-setctime"
 version = "1.2.0"
 description = "A small Python utility to set file creation time on Windows"
@@ -3353,4 +3399,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<3.13"
-content-hash = "e12fc1818f01a43f6b3bda833c2a6fa3351fdc841dd86f156bae657eee8083d3"
+content-hash = "0174f30eeae373c94765125f57015bcf69c36cba3f8e8c5dfb4d9cc54967cc6d"

@@ -1,241 +1,556 @@
-# OLAF - Voice Agent for Raspberry Pi 5
+# R2D2 Chatbot Generator
 
-A Star Wars-inspired local voice agent running on Raspberry Pi 5 with hybrid voice output combining R2D2 sounds and intelligible speech.
+**Bumblebee-Style Voice Assistant with Star Wars R2D2 Personality**
 
-## Overview
+Build your own voice-activated chatbot that communicates like Bumblebee from Transformers - using expressive R2D2 beeps and chirps as primary communication, then switching to clear voice transmission when delivering specific information.
 
-OLAF (Optimized Local Assistant Framework) is a voice-activated AI agent that:
-- 🎤 Listens and transcribes speech locally using Faster-Whisper
-- 🧠 Processes requests using Claude API (cloud)
-- 🤖 **Hybrid Voice Output:**
-  - R2D2-style emotional acknowledgments (instant feedback <50ms)
-  - Piper TTS for clear British speech (male/female voices)
-  - Star Wars communication effects (comlink, hologram, radio)
-- 🎵 Combines procedural R2D2 synthesis + neural TTS
-- ⚡ Runs entirely on Raspberry Pi 5 with optimized latency
+---
 
-## Features
+## 🌟 Features
 
-- **Hybrid Voice System**: R2D2 acknowledgments + clear TTS responses
-- **Star Wars Effects**: Comlink, hologram, and radio transmission effects
-- **Privacy-focused**: All speech processing happens locally on your Pi
-- **Low latency**: R2D2 sounds are instant, TTS optimized for Pi
-- **Modular**: Easy to swap components (STT, TTS, LLM)
-- **British Voices**: Male and female voice options via Piper TTS
+- **🎤 Wake Word Activation** - "Hey Olaf" or "Alexa" to activate (customizable)
+- **🎙️ Voice Activity Detection (VAD)** - Smart recording that stops when you finish speaking
+- **🗣️ Speech Recognition** - Whisper-based STT (local, private, English-only)
+- **🤖 AI-Powered Responses** - Groq Llama 3.1 (fast, free tier available)
+- **🔊 Hybrid TTS Output**:
+  - **Primary**: R2D2 chirps/beeps for reactions and acknowledgments
+  - **Transmission**: High-quality voice (with radio effects) for specific information
+- **🎭 Star Wars Audio Effects** - Radio transmission, comlink, hologram, dramatic narrator
+- **🔇 Noise Filtering** - Ignores typing, objects falling, and other background sounds
+- **💬 Natural Conversation** - Maintains context across multiple exchanges
 
-## Hardware Requirements
+---
 
-- Raspberry Pi 5 (8GB recommended)
-- USB microphone
-- Speaker or headphones
-- Optional: Hailo AI Kit for acceleration
+## 🚀 Quick Start
 
-## Quick Start
+### Prerequisites
 
-1. **Install system dependencies:**
-```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y portaudio19-dev python3-pyaudio git espeak-ng
-```
+- Python 3.8+
+- Linux/macOS (tested on Ubuntu)
+- Microphone and speakers
+- API keys: Groq (free), Picovoice (free tier available)
 
-2. **Install Python dependencies:**
-```bash
-poetry install
-```
+### Installation
 
-3. **Configure API key:**
-```bash
+\`\`\`bash
+# Clone the repository
+cd experiments_with_voice_agent
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
 cp .env.example .env
-# Edit .env and add your Anthropic API key
-```
+# Edit .env and add your API keys:
+#   GROQ_API_KEY=your_groq_key
+#   PICOVOICE_API_KEY=your_picovoice_key
+\`\`\`
 
-4. **Run the hybrid voice demo:**
-```bash
-poetry run python demo_hybrid_voice.py
-```
+### Run Your First Chatbot
 
-## Hybrid Voice System
+\`\`\`python
+from r2d2_chatbot.agent import R2D2ChatbotAgent
 
-OLAF uses a unique **two-tier voice system** combining the best of both worlds:
+# Create agent
+agent = R2D2ChatbotAgent()
 
-### 1. R2D2 Acknowledgments (Instant Feedback)
-- Emotional beeps and sounds that play instantly (<50ms)
-- Provides immediate feedback while generating full response
-- 10 distinct emotions: happy, sad, angry, excited, curious, neutral, confused, lazy, afraid, naughty
+# Start chatbot (wake word activated)
+agent.run()
+\`\`\`
 
-### 2. Piper TTS (Intelligible Speech)
-- High-quality British voices (male/female)
-- Optimized for Raspberry Pi 5
-- ~500ms-1s generation time
+That's it! Say your wake word, then start talking.
 
-### 3. Star Wars Communication Effects
-- **Comlink**: Military-style radio with squelch tones (clearest)
-- **Hologram**: Glitchy transmission like Leia's message
-- **Radio**: Standard radio transmission with static
+---
 
-### Example Usage
+## 📖 Usage Examples
 
-```python
-from demo_hybrid_voice import HybridVoiceAgent
+### Example 1: Basic Usage
 
-# Initialize OLAF
-agent = HybridVoiceAgent(tts_voice='female')
+\`\`\`python
+from r2d2_chatbot.agent import R2D2ChatbotAgent
 
-# Full response: R2D2 beep + Piper speech with comlink effect
-agent.respond(
-    "Atmospheric conditions stable, 22 degrees celsius.",
-    effect='comlink',
-    acknowledge_emotion='curious'
-)
+# Use default configuration
+agent = R2D2ChatbotAgent()
+agent.run()
 
-# Quick R2D2-only response
-agent.quick_response("you're welcome", emotion='happy')
-```
+# Say wake word: "Hey Olaf"
+# Bot responds with happy R2D2 beep
+# Start conversation:
+#   You: "What's the weather?"
+#   Bot: [R2D2 chirp: "checking weather"]
+#        [Transmission: "72 degrees, sunny, winds 10mph"]
+#   You: "Thanks!"
+#   Bot: [R2D2 chirp: "welcome commander"]
+#   You: "Goodbye"
+#   Bot goes to sleep
+\`\`\`
 
-### Demo Scenarios
+### Example 2: Custom Configuration
 
-Run `demo_hybrid_voice.py` to see 20 Star Wars-style responses for:
-- Weather & environment monitoring
-- Time management & scheduling
-- Smart home control
-- Information retrieval
-- Reminders & task management
-- Navigation & traffic
-- Entertainment control
-- Security & alerts
-- Shopping & lists
+\`\`\`python
+from r2d2_chatbot.agent import R2D2ChatbotAgent
+from r2d2_chatbot.config import Config
 
-Each response sounds like a communication from a Star Wars droid!
+# Create custom config
+config = Config()
+config.TTS_VOICE = 'male'  # Use male voice instead of female
+config.TTS_EFFECT = 'comlink'  # Different audio effect
+config.USE_WAKE_WORD = False  # Press Enter instead of wake word
+config.VAD_AGGRESSIVENESS = 3  # More aggressive noise filtering
 
-## R2D2 Voice System (Word Vocabulary)
+# Create agent with custom config
+agent = R2D2ChatbotAgent(config=config)
+agent.run()
+\`\`\`
 
-The R2D2 voice synthesizer now supports phonetic text-to-speech, converting text into R2D2 sounds with subtle rhythmic hints:
+### Example 3: Without Wake Word
 
-```python
-from r2d2_voice import R2D2Voice
+\`\`\`python
+from r2d2_chatbot.agent import R2D2ChatbotAgent
+from r2d2_chatbot.config import Config
 
-voice = R2D2Voice()
+config = Config()
+config.USE_WAKE_WORD = False  # Disable wake word
 
-# Play phonetic speech directly (no saving needed!)
-# Default is 3x speed - snappy R2D2 responses!
-voice.play_text("I am good", emotion='happy')
+agent = R2D2ChatbotAgent(config=config)
+agent.run()
 
-# Generate audio without playing
-audio = voice.speak_text("I am good", emotion='happy')
-# → Returns audio with 3 word clusters, high pitch, fast
+# Press Enter to start each conversation
+\`\`\`
 
-# EXTREME emotion differences!
-voice.play_text("Hello", emotion='excited')   # Pitch 3.0x, Speed 0.5x (2x faster)
-voice.play_text("Hello", emotion='sleepy')    # Pitch 0.5x, Speed 3.0x (3x slower)
-voice.play_text("Hello", emotion='happy')     # Pitch 2.5x, bouncy
-voice.play_text("Hello", emotion='sad')       # Pitch 0.6x, very slow
-voice.play_text("Hello", emotion='afraid')    # Pitch 2.2x, jittery
+---
 
-# Control speed (optional - default is 3.0)
-voice.play_text("Testing")                   # Default 3x speed
-voice.play_text("Testing", speed=1.0)        # 3x slower
-voice.play_text("Testing", speed=5.0)        # 1.67x faster
+## ⚙️ Configuration
 
-# Control clarity (phonetic hints vs emotion)
-voice.play_text("Testing", emotion='happy', clarity=0.1)  # More emotion
-voice.play_text("Testing", emotion='happy', clarity=0.8)  # More phonetic
+Edit \`r2d2_chatbot/config.py\` or create custom Config objects:
 
-# Save to file if needed
-voice.save_text("I am good", "output.wav", emotion='happy')
+### Wake Word Settings
 
-# Backward compatible - old API still works
-voice.play(emotion='excited')  # Random excited sounds
-```
+\`\`\`python
+USE_WAKE_WORD = True  # Enable/disable wake word
+PICOVOICE_API_KEY = os.getenv('PICOVOICE_API_KEY')
+PLATFORM = 'linux'  # 'linux' or 'raspberry-pi'
+\`\`\`
 
-### How it Works
+### Voice Settings
 
-1. **Text → Phonemes**: Uses `phonemizer` library with `espeak-ng` to convert text to IPA phonemes
-2. **Phoneme Categories**: Groups phonemes (vowels, plosives, fricatives, nasals, approximants)
-3. **Sound Mapping**: Maps each category to R2D2 sounds (beeps, boops, whistles, chirps, etc.)
-4. **Emotion Blending**: Applies pitch shifts and speed changes based on emotion
-5. **Rhythm**: Word boundaries create recognizable structure through timing gaps
+\`\`\`python
+TTS_VOICE = 'female'  # 'male' or 'female'
+# female = en_US-ljspeech-high (HIGH quality, crystal clear)
+# male = en_GB-alan-medium (British, clear)
 
-### API Reference
+TTS_EFFECT = 'clear_transmission'  # Audio effect
+# Options:
+#   'clear_transmission' - Clear + transmission feel (RECOMMENDED)
+#   'comlink' - Radio transmission with squelch
+#   'dramatic' - Deep narrator (Star Wars intro style)
+#   'radio' - Vintage radio effect
+#   'hologram' - Glitchy hologram
+#   'clear' - No effect
+\`\`\`
 
-```python
-R2D2Voice.speak_text(
-    text: str,
-    emotion: str = 'happy',         # 10 emotions with EXTREME variations
-    intensity: float = 1.0,         # Volume level (0.0-2.0)
-    clarity: float = 0.3,           # Phonetic hints (0.0=pure emotion, 1.0=pure phonetics)
-    speed: float = 3.0              # Playback speed (default: 3.0 = snappy!)
-) -> np.ndarray
-```
+### LLM Settings
 
-**Parameters:**
-- `speed=3.0` - **Default** - Snappy R2D2 responses!
-- `speed=1.0` - 3x slower (drawn out)
-- `speed=5.0` - 1.67x faster (very quick)
+\`\`\`python
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+LLM_MODEL = 'llama-3.1-8b-instant'  # Fast and free!
+\`\`\`
 
-**10 EXTREME Emotions (Pitch: 0.5x-3x, Speed: 0.5x-3x):**
+### Speech Recognition Settings
 
-| Emotion | Pitch | Speed | Character |
-|---------|-------|-------|-----------|
-| excited | 3.0x ⬆⬆⬆ | 0.5x ⚡⚡ | Extremely high & rapid |
-| happy | 2.5x ⬆⬆ | 0.6x ⚡ | Very high & bouncy |
-| afraid | 2.2x ⬆⬆ | 0.65x ⚡ | High & jittery |
-| surprised | 1.9x ⬆ | 0.7x ⚡ | High & sudden |
-| playful | 1.7x ⬆ | 0.8x ⚡ | High & bouncy |
-| curious | 1.5x ⬆ | 1.2x ⏱ | Med-high & thoughtful |
-| confident | 1.2x | 0.9x | Steady & assertive |
-| angry | 0.7x ⬇ | 0.75x ⚡ | Low & aggressive |
-| sad | 0.6x ⬇⬇ | 2.0x ⏱⏱ | Very low & slow |
-| sleepy | 0.5x ⬇⬇⬇ | 3.0x ⏱⏱⏱ | Extremely low & drowsy |
+\`\`\`python
+WHISPER_MODEL = 'small'  # 'tiny', 'base', 'small', 'medium', 'large'
+WHISPER_DEVICE = 'cpu'  # 'cpu' or 'cuda'
+WHISPER_COMPUTE_TYPE = 'int8'  # 'int8', 'int16', 'float16', 'float32'
+\`\`\`
 
-### System Requirements
+### VAD (Voice Activity Detection) Settings
 
-- **espeak-ng**: Required for phoneme conversion
-  ```bash
-  sudo apt-get install espeak-ng
-  ```
-- **phonemizer**: Automatically installed via poetry
-  ```bash
-  poetry install
-  ```
+\`\`\`python
+VAD_AGGRESSIVENESS = 2  # 0-3, higher = more aggressive filtering
+VAD_SPEECH_THRESHOLD = 8  # Frames needed to start recording (filters typing)
+VAD_MIN_DURATION = 1.5  # Minimum recording duration (filters short noises)
+\`\`\`
 
-### Testing
+**Noise Filtering Tips:**
+- Typing sounds? Increase \`VAD_SPEECH_THRESHOLD\` to 10
+- Objects falling? Increase \`VAD_MIN_DURATION\` to 2.0
+- Too sensitive? Increase \`VAD_AGGRESSIVENESS\` to 3
+- Not picking up speech? Decrease values
 
-Run the test suite to verify installation:
+---
 
-```bash
-# Basic structure test (no espeak-ng needed)
-poetry run python test_basic_structure.py
+## 🎯 How It Works
 
-# Full phonetic speech tests (requires espeak-ng)
-poetry run python test_phonetic_speech.py
+### Bumblebee-Style Communication
 
-# Original emotion-only tests
-poetry run python test_r2d2.py
-```
+Like Bumblebee from Transformers, your chatbot:
 
-## Documentation
+1. **Listens** - Wake word activates, VAD records until you stop speaking
+2. **Understands** - Whisper transcribes (English only)
+3. **Thinks** - LLM generates structured response:
+   - \`r2d2_message\`: 3-5 word droid-like reaction
+   - \`info_message\`: Specific information (if needed)
+4. **Responds**:
+   - **R2D2 chirp/beep** - Acknowledges with emotion
+   - **[Transition ping]** - Brief R2D2 tone
+   - **Voice transmission** - Delivers information with radio effect
+   - **R2D2 confirmation** - Affirms completion
 
-See [TUTORIAL.md](TUTORIAL.md) for detailed step-by-step instructions.
+### Example Flow
 
-## Tech Stack
+\`\`\`
+You: "Tell me a pancake recipe"
 
-- **Orchestration**: [Pipecat](https://github.com/pipecat-ai/pipecat)
-- **Speech-to-Text**: [Faster-Whisper](https://github.com/guillaumekln/faster-whisper)
-- **Voice Output**:
-  - [Piper TTS](https://github.com/rhasspy/piper) - Neural TTS optimized for Pi
-  - Custom R2D2-style procedural synthesis
-  - DSP effects (radio, comlink, hologram)
-- **LLM**: [Claude API](https://www.anthropic.com/api)
-- **Audio Processing**: NumPy, SciPy, sounddevice
+Bot Response:
+[R2D2 curious chirp: "recipe found"]
+[Transition ping]
+[TRANSMISSION: "1 cup flour, 2 tbsp sugar, 2 tsp baking powder,
+half tsp salt, 1 cup milk, 1 egg, 2 tbsp butter. Mix dry,
+add wet, cook medium heat, flip at bubbles"]
+[R2D2 happy confirmation: "understood"]
+\`\`\`
 
-## Project Status
+---
 
-🚧 In development - See [TUTORIAL.md](TUTORIAL.md) for current progress
+## 🔑 API Keys Setup
 
-## License
+### Groq API Key (Required)
 
-MIT
+1. Go to https://console.groq.com/
+2. Sign up for free account
+3. Create API key
+4. Add to \`.env\`:
+   \`\`\`
+   GROQ_API_KEY=gsk_your_key_here
+   \`\`\`
 
-## Acknowledgments
+**Free Tier**: 14,400 requests/day (plenty for personal use)
 
-Built for experimentation with local voice agents and AI acceleration on edge devices.
+### Picovoice API Key (Required if using wake word)
+
+1. Go to https://console.picovoice.ai/
+2. Sign up for free account
+3. Create access key
+4. Add to \`.env\`:
+   \`\`\`
+   PICOVOICE_API_KEY=your_key_here
+   \`\`\`
+
+**Free Tier**: 3 wake word models, sufficient for personal projects
+
+---
+
+## 🐛 Troubleshooting
+
+### Wake Word Not Detected
+
+**Problem**: Bot doesn't respond to wake word
+
+**Solutions**:
+- Check microphone: \`python -c "import sounddevice; print(sounddevice.query_devices())"\`
+- Verify API key in \`.env\`
+- Try different sensitivity: Modify \`wakeword.py\` sensitivity (0.3-0.7)
+- Test without wake word: Set \`USE_WAKE_WORD = False\`
+
+### Bot Picks Up Background Noise
+
+**Problem**: Activates from typing, objects falling, etc.
+
+**Solutions**:
+\`\`\`python
+# Increase noise filtering
+VAD_AGGRESSIVENESS = 3  # More aggressive (0-3)
+VAD_SPEECH_THRESHOLD = 10  # More frames needed
+VAD_MIN_DURATION = 2.0  # Longer minimum duration
+\`\`\`
+
+### Transcription in Wrong Language
+
+**Problem**: Whisper transcribes in Hindi, Greek, etc. instead of English
+
+**Solutions**:
+- Already fixed in code: \`language='en'\` parameter forces English
+- If still happening, check Whisper model: Use 'small' or larger
+
+### LLM Responds in Non-English
+
+**Problem**: Bot responds in Greek, Spanish, etc.
+
+**Solutions**:
+- Already fixed with fallback detection
+- System prompt enforces English-only
+- Check \`r2d2_chatbot/llm/groq_client.py\` for \`_is_likely_english()\` method
+
+### Audio Quality Issues
+
+**Problem**: Voice sounds robotic, choppy, or unclear
+
+**Solutions**:
+\`\`\`python
+# Use highest quality voice
+TTS_VOICE = 'female'  # en_US-ljspeech-high
+
+# Use clearest effect
+TTS_EFFECT = 'clear_transmission'  # or 'clear'
+\`\`\`
+
+---
+
+## 📦 Project Structure
+
+\`\`\`
+experiments_with_voice_agent/
+├── README.md                          # This file
+├── requirements.txt                   # Python dependencies
+├── .env.example                       # Environment template
+├── .env                              # Your API keys (gitignored)
+│
+├── r2d2_chatbot/                     # Main package
+│   ├── __init__.py
+│   ├── agent.py                      # Main R2D2ChatbotAgent class
+│   ├── config.py                     # Configuration settings
+│   │
+│   ├── audio/                        # Audio input components
+│   │   ├── __init__.py
+│   │   ├── wakeword.py              # Picovoice wake word detection
+│   │   ├── vad.py                   # Voice activity detection
+│   │   └── wake_models/             # Wake word model files (.ppn)
+│   │
+│   ├── speech/                       # Speech processing
+│   │   ├── __init__.py
+│   │   ├── stt.py                   # Whisper speech-to-text
+│   │   │
+│   │   └── tts/                     # Text-to-speech
+│   │       ├── __init__.py
+│   │       ├── piper.py             # Piper TTS (voice transmission)
+│   │       ├── r2d2.py              # R2D2 sound generator
+│   │       ├── effects.py           # Audio effects (radio, comlink, etc.)
+│   │       └── piper_models/        # Piper voice models (auto-downloaded)
+│   │
+│   └── llm/                         # Language model
+│       ├── __init__.py
+│       └── groq_client.py           # Groq LLM client with structured responses
+│
+├── examples/                         # Usage examples
+│   ├── basic.py                     # Simple example
+│   └── bumblebee.py                 # Full-featured example
+│
+└── models/                          # Model storage (gitignored)
+    ├── piper/                       # Piper TTS models
+    └── whisper/                     # Whisper STT models (cached)
+\`\`\`
+
+---
+
+## 🔧 Dependencies
+
+Install via \`requirements.txt\`:
+
+\`\`\`bash
+pip install -r requirements.txt
+\`\`\`
+
+**Core Dependencies:**
+- \`faster-whisper\` - Local speech-to-text (Whisper)
+- \`piper-tts\` - High-quality neural TTS
+- \`groq\` - LLM API client (Llama 3.1)
+- \`pvporcupine\` - Wake word detection (Picovoice)
+- \`webrtcvad\` - Voice activity detection
+- \`sounddevice\` - Audio I/O
+- \`numpy\` - Audio processing
+- \`scipy\` - Signal processing (audio effects)
+- \`python-dotenv\` - Environment variables
+
+---
+
+## 💡 Tips and Best Practices
+
+### For Best Wake Word Detection:
+- Speak clearly at normal volume
+- Reduce background noise
+- Place microphone 1-2 feet from mouth
+- Adjust sensitivity if needed (0.3 = sensitive, 0.7 = less sensitive)
+
+### For Best Speech Recognition:
+- Speak naturally, don't rush
+- Pause briefly before and after speaking
+- Reduce echo (avoid empty rooms with hard surfaces)
+- Use good quality microphone if possible
+
+### For Best Conversations:
+- Keep questions clear and specific
+- Wait for full response before speaking again
+- Use "goodbye" or "go to sleep" to end session properly
+- Bot maintains context, so you can have multi-turn conversations
+
+### For Noisy Environments:
+\`\`\`python
+# More aggressive filtering
+config.VAD_AGGRESSIVENESS = 3
+config.VAD_SPEECH_THRESHOLD = 12
+config.VAD_MIN_DURATION = 2.0
+\`\`\`
+
+### For Quiet Environments:
+\`\`\`python
+# More sensitive
+config.VAD_AGGRESSIVENESS = 1
+config.VAD_SPEECH_THRESHOLD = 5
+config.VAD_MIN_DURATION = 1.0
+\`\`\`
+
+---
+
+## 🔒 Privacy
+
+**All processing is local except LLM:**
+- ✅ Wake word: Local (Picovoice Porcupine)
+- ✅ VAD: Local (WebRTC)
+- ✅ STT: Local (Faster Whisper)
+- ❌ LLM: Cloud (Groq API)
+- ✅ TTS: Local (Piper)
+- ✅ R2D2: Local (synthetic generation)
+
+**To maximize privacy:**
+- Audio never leaves your device (except transcribed text to LLM)
+- Groq doesn't store API requests beyond 30 days (per their policy)
+- You can self-host LLM with Ollama for 100% local operation
+
+---
+
+## 🎓 Understanding the Response Format
+
+The LLM returns structured JSON responses:
+
+\`\`\`json
+{
+  "r2d2_message": "Brief 3-5 word reaction",
+  "info_message": "Specific information" or null
+}
+\`\`\`
+
+### When info_message is null:
+
+Used for simple interactions that don't require specific information:
+- Greetings: "How are you?" → \`"olaf feel good"\` + null
+- Yes/no: "Are you there?" → \`"yes here"\` + null
+- Thanks: "Thanks!" → \`"welcome commander"\` + null
+
+### When info_message has content:
+
+Used when delivering specific facts, data, or instructions:
+- Weather: \`"checking weather"\` + \`"72 degrees, sunny, winds 10mph"\`
+- Recipe: \`"recipe found"\` + \`"1 cup flour, 2 tbsp sugar, ..."\`
+- Time: \`"time check"\` + \`"2:45 PM"\`
+
+### Response Style Guidelines:
+
+**R2D2 Message (3-5 words, broken English OK):**
+- ✅ "olaf feel good"
+- ✅ "checking weather"
+- ✅ "data found"
+- ✅ "recipe ready"
+- ✅ "yes here"
+- ❌ "I am feeling quite good today" (too long)
+- ❌ "Let me check the weather for you" (too formal)
+
+**Info Message (ultra brief, comma-separated):**
+- ✅ "72 degrees, sunny, winds 10mph"
+- ✅ "1 cup flour, 2 tbsp sugar, 1 egg, mix"
+- ✅ "Park level, engage brake, loosen nuts, jack up, swap wheels"
+- ❌ "The temperature is currently 72 degrees and it is sunny" (too wordy)
+- ❌ "First you'll need 1 cup of flour, then add..." (too conversational)
+
+---
+
+## 💬 Example Conversations
+
+### Example 1: Information Query
+\`\`\`
+You: "Hey Olaf"
+Bot: [Happy R2D2 beep]
+
+You: "What's the capital of France?"
+Bot: [R2D2: "data found"]
+     [Transmission: "Paris, France"]
+     [R2D2: "understood"]
+
+You: "Thanks!"
+Bot: [R2D2: "welcome commander"]
+\`\`\`
+
+### Example 2: Recipe
+\`\`\`
+You: "Hey Olaf"
+Bot: [Happy R2D2 beep]
+
+You: "How do I make chocolate chip cookies?"
+Bot: [R2D2: "recipe found"]
+     [Transmission: "1 cup butter, 1 cup sugar, 2 eggs, 2 tsp vanilla,
+      3 cups flour, 1 tsp baking soda, half tsp salt, 2 cups chocolate chips.
+      Mix wet, add dry, fold chips, bake 375F, 10 minutes"]
+     [R2D2: "understood"]
+\`\`\`
+
+### Example 3: Conversation
+\`\`\`
+You: "Hey Olaf"
+Bot: [Happy R2D2 beep]
+
+You: "How are you?"
+Bot: [R2D2: "olaf feel good"]
+
+You: "What can you do?"
+Bot: [R2D2: "data ready"]
+     [Transmission: "OLAF voice assistant, droid personality, handles queries"]
+     [R2D2: "understood"]
+
+You: "That's cool. Goodbye!"
+Bot: [R2D2: "sleep mode"]
+     [Transmission: "Say my wake word to activate"]
+     [R2D2: "understood"]
+\`\`\`
+
+---
+
+## 🎯 Roadmap
+
+**Completed:**
+- ✅ Bumblebee-style hybrid TTS
+- ✅ Wake word activation
+- ✅ Smart VAD with noise filtering
+- ✅ English-only mode
+- ✅ High-quality voices
+- ✅ Audio effects
+- ✅ Structured LLM responses
+- ✅ Clean package structure
+
+**Planned:**
+- ⏳ Web interface
+- ⏳ Docker container
+- ⏳ Alternative LLM backends (Ollama, etc.)
+- ⏳ Multi-language support
+- ⏳ Mobile app
+- ⏳ Home Assistant integration
+- ⏳ Custom wake word training
+
+---
+
+## 🙏 Credits
+
+**Built with:**
+- [Faster Whisper](https://github.com/guillaumekln/faster-whisper) - Speech recognition
+- [Piper TTS](https://github.com/rhasspy/piper) - Neural text-to-speech
+- [Groq](https://groq.com/) - Fast LLM inference
+- [Picovoice Porcupine](https://picovoice.ai/) - Wake word detection
+- [WebRTC VAD](https://github.com/wiseman/py-webrtcvad) - Voice activity detection
+
+**Inspired by:**
+- R2D2 from Star Wars
+- Bumblebee from Transformers
+- JARVIS from Iron Man
+
+---
+
+**Ready to build your own R2D2 chatbot? Start with the Quick Start section above!** 🚀
