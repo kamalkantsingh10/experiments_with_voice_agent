@@ -26,7 +26,7 @@ A voice assistant that communicates like Bumblebee from Transformers - using exp
 ### Installation
 
 ```bash
-cd experiments_with_voice_agent
+cd r2d2-like-chatbot
 pip install -r requirements.txt
 
 cp .env.example .env
